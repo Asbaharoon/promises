@@ -12,6 +12,7 @@ import com.xenione.libs.promises.promise.OneResult;
 import com.xenione.libs.promises.promise.PromiseMaker;
 import com.xenione.libs.promises.promise.listeners.AlwaysResult;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
 		Deferred<Void, Integer> deferred1 = new BaseDeferred<Void, Integer>() {
 
 			@Override
-			protected void doTask(Void params) {
+			protected void doTask(Executor executor, Void params) {
 				Log.i("MainActivity", "deferred1#doTask(...)");
 				this.resolve(1);
 			}
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 		Deferred<Integer, Integer> deferred2 = new BaseDeferred<Integer, Integer>() {
 
 			@Override
-			protected void doTask(Integer params) {
+			protected void doTask(Executor executor,Integer params) {
 				Log.i("MainActivity", "deferred2#doTask(...)");
 				this.resolve(params + 1);
 			}
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 		Deferred<Integer, Integer> deferred3 = new BaseDeferred<Integer, Integer>() {
 
 			@Override
-			protected void doTask(Integer params) {
+			protected void doTask(Executor executor,Integer params) {
 				Log.i("MainActivity", "deferred3#doTask(...)");
 				this.resolve(params + 1);
 			}
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 		Deferred<Integer, OneResult> deferred4a = new BaseDeferred<Integer, OneResult>() {
 
 			@Override
-			protected void doTask(Integer params) {
+			protected void doTask(Executor executor,Integer params) {
 				Log.i("MainActivity", "deferred4a#doTask(...)");
 				this.always(AlwaysResult.ok(new OneResult(1, this.promise(), null)));
 			}
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 		Deferred<Integer, OneResult> deferred4b = new BaseDeferred<Integer, OneResult>() {
 
 			@Override
-			protected void doTask(Integer params) {
+			protected void doTask(Executor executor,Integer params) {
 				Log.i("MainActivity", "deferred4b#doTask(...)");
 				this.always(AlwaysResult.<OneResult>error(new Exception()));
 			}
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 		Deferred<MultiResult, Void> deferred5 = new BaseDeferred<MultiResult, Void>() {
 
 			@Override
-			protected void doTask(MultiResult params) {
+			protected void doTask(Executor executor,MultiResult params) {
 				Log.i("MainActivity", "deferred5#doTask(...)");
 				this.resolve(null);
 			}

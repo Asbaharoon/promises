@@ -1,5 +1,5 @@
-/**
- * Copyright 2016 Eugeni Josep Senent i Gabriel
+/*
+ * Copyright 2017 Eugeni Josep Senent i Gabriel
  * This is a derivative work of an open-source project jdeferred(https://github.com/jdeferred/jdeferred)
  * by Ray Tsang("saturnism") as major contributor.
  *
@@ -20,6 +20,8 @@ package com.xenione.libs.promises.deferred;
 import com.xenione.libs.promises.promise.BasePromise;
 import com.xenione.libs.promises.promise.Promise;
 import com.xenione.libs.promises.promise.listeners.AlwaysResult;
+
+import java.util.concurrent.Executor;
 
 public abstract class AbsDeferred<P, R> implements Deferred<P, R> {
 
@@ -69,13 +71,7 @@ public abstract class AbsDeferred<P, R> implements Deferred<P, R> {
 		return this;
 	}
 
-	@Override
-	public Deferred<P, R> start(P params) {
-		doTask(params);
-		return this;
-	}
-
-	protected abstract void doTask(P params);
+	protected abstract void doTask(Executor executor, P params);
 
 	public Promise<R> promise() {
 		return promise;

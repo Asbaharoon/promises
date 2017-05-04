@@ -22,6 +22,7 @@ import com.xenione.libs.promises.promise.OneResult;
 import com.xenione.libs.promises.promise.listeners.AlwaysListener;
 import com.xenione.libs.promises.promise.listeners.AlwaysResult;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MultiDeferredAdapter<R_IN> extends BaseDeferred<R_IN, MultiResult>
@@ -38,9 +39,9 @@ public class MultiDeferredAdapter<R_IN> extends BaseDeferred<R_IN, MultiResult>
 	}
 
 	@Override
-	protected void doTask(R_IN params) {
+	protected void doTask(Executor executor, R_IN params) {
 		for (Deferred<R_IN, OneResult> deferred : deferreds) {
-			deferred.start(params).promise().register(this);
+			deferred.startOnExecutor(executor, params).promise().register(this);
 		}
 	}
 

@@ -11,11 +11,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.concurrent.Executor;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class MultiDeferredAdapterTest {
@@ -24,7 +25,7 @@ public class MultiDeferredAdapterTest {
 	public void whenDoneParallelDeferred_CallDone() {
 		Deferred<Void, OneResult> deferred1 = new BaseDeferred<Void, OneResult>() {
 			@Override
-			protected void doTask(Void params) {
+			protected void doTask(Executor executor, Void params) {
 				OneResult result = new OneResult(1, this.promise(), null);
 				this.always(AlwaysResult.ok(result));
 			}
@@ -32,7 +33,7 @@ public class MultiDeferredAdapterTest {
 
 		Deferred<Void, OneResult> deferred2 = new BaseDeferred<Void, OneResult>() {
 			@Override
-			protected void doTask(Void params) {
+			protected void doTask(Executor executor,Void params) {
 				OneResult result = new OneResult(2, this.promise(), null);
 				this.always(AlwaysResult.ok(result));
 			}
@@ -42,7 +43,7 @@ public class MultiDeferredAdapterTest {
 		AlwaysListener<MultiResult> listener = mock(AlwaysListener.class);
 		multiDeferredAdapter.promise().register(listener);
 
-		multiDeferredAdapter.start(null);
+		multiDeferredAdapter.startOnExecutor(null, null);
 
 		verify(listener).onAlways(any(AlwaysResult.class));
 		verifyZeroInteractions(listener);
@@ -53,7 +54,7 @@ public class MultiDeferredAdapterTest {
 	public void whenCancelParallelDeferred_CallDone() {
 		Deferred<Void, OneResult> deferred1 = new BaseDeferred<Void, OneResult>() {
 			@Override
-			protected void doTask(Void params) {
+			protected void doTask(Executor executor, Void params) {
 				OneResult result = new OneResult(1, this.promise(), null);
 				this.always(AlwaysResult.ok(result));
 			}
@@ -61,7 +62,7 @@ public class MultiDeferredAdapterTest {
 
 		Deferred<Void, OneResult> deferred2 = new BaseDeferred<Void, OneResult>() {
 			@Override
-			protected void doTask(Void params) {
+			protected void doTask(Executor executor, Void params) {
 				this.always(AlwaysResult.<OneResult>error(new Exception()));
 			}
 		};

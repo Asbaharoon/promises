@@ -1,5 +1,5 @@
-/**
- * Copyright 2016 Eugeni Josep Senent i Gabriel
+/*
+ * Copyright 2017 Eugeni Josep Senent i Gabriel
  * This is a derivative work of an open-source project jdeferred(https://github.com/jdeferred/jdeferred)
  * by Ray Tsang("saturnism") as major contributor.
  *
@@ -33,9 +33,9 @@ public interface Deferred<P, R> {
 
 	Deferred<P, R> cancel();
 
-	Deferred<P, R> start(P params);
-
 	Deferred<P, R> startOnExecutor(Executor executor, P params);
+
+	Deferred<P, R> start(P params);
 
 	Promise<R> promise();
 	

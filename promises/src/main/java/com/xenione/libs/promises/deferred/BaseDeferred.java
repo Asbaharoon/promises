@@ -1,5 +1,5 @@
-/**
- * Copyright 2016 Eugeni Josep Senent i Gabriel
+/*
+ * Copyright 2017 Eugeni Josep Senent i Gabriel
  * This is a derivative work of an open-source project jdeferred(https://github.com/jdeferred/jdeferred)
  * by Ray Tsang("saturnism") as major contributor.
  *
@@ -21,24 +21,21 @@ import java.util.concurrent.Executor;
 
 public class BaseDeferred<P, R> extends AbsDeferred<P, R> {
 
+	private MainUIExecutor defaultExecutor = new MainUIExecutor();
+
+	@Override
+	public Deferred<P, R> startOnExecutor(final Executor executor, final P params) {
+		doTask(executor, params);
+		return this;
+	}
+
 	@Override
 	public Deferred<P, R> start(P params) {
-		doTask(params);
+		doTask(defaultExecutor, params);
 		return this;
 	}
 
-	@Override
-	public Deferred<P, R> startOnExecutor(Executor executor, final P params) {
-		executor.execute(new Runnable() {
-			@Override
-			public void run() {
-				doTask(params);
-			}
-		});
-		return this;
-	}
-
-	protected void doTask(P params) {
+	protected void doTask(Executor executor, P params) {
 
 	}
 

@@ -25,6 +25,7 @@ import com.xenione.libs.promises.promise.listeners.CancelListener;
 import com.xenione.libs.promises.promise.listeners.DoneListener;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public interface PromiseMaker<P, R_IN> extends TreePromise<R_IN> {
 
@@ -38,7 +39,7 @@ public interface PromiseMaker<P, R_IN> extends TreePromise<R_IN> {
 
 		private Deferred<P, R_IN> previous;
 
-		private Executor exec;
+		private Executor executor = Executors.newSingleThreadExecutor();
 
 		private Impl(Deferred<P, R_IN> previous) {
 			this.previous = previous;
@@ -50,14 +51,14 @@ public interface PromiseMaker<P, R_IN> extends TreePromise<R_IN> {
 
 		@Override
 		public PromiseMaker<P, R_IN> onExecutor(Executor executor) {
-			exec = executor;
+			this.executor = executor;
 			return this;
 		}
 
 		@Override
 		public <R_OUT> TreePromise<R_OUT> then(final Deferred<R_IN, R_OUT> deferred) {
 			pipe(deferred);
-			return new Impl<>(deferred);
+			return new Impl<>(deferred).onExecutor(executor);
 		}
 
 		@SafeVarargs
@@ -65,7 +66,7 @@ public interface PromiseMaker<P, R_IN> extends TreePromise<R_IN> {
 		public final TreePromise<MultiResult> when(final Deferred<R_IN, OneResult>... deferreds) {
 			MultiDeferredAdapter<R_IN> multiDeferredAdapter = new MultiDeferredAdapter<>(deferreds);
 			pipe(multiDeferredAdapter);
-			return new Impl<>(multiDeferredAdapter);
+			return new Impl<>(multiDeferredAdapter).onExecutor(executor);
 		}
 
 		private void pipe(final Deferred<R_IN, ?> deferred) {
@@ -73,7 +74,7 @@ public interface PromiseMaker<P, R_IN> extends TreePromise<R_IN> {
 					.register(new DoneListener<R_IN>() {
 						@Override
 						public void onDone(R_IN result) {
-							deferred.start(result);
+							deferred.startOnExecutor(executor, result);
 						}
 					})
 					.register(new CancelListener() {
@@ -85,14 +86,14 @@ public interface PromiseMaker<P, R_IN> extends TreePromise<R_IN> {
 					.register(new AlwaysListener<R_IN>() {
 						@Override
 						public void onAlways(AlwaysResult<R_IN> result) {
-							deferred.start(result.getResult());
+							deferred.startOnExecutor(executor, result.getResult());
 						}
 					});
 		}
 
 		@Override
 		public void start(P params) {
-			previous.start(params);
+			previous.startOnExecutor(executor, params);
 		}
 
 		public void cancel() {

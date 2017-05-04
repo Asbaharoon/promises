@@ -92,7 +92,7 @@ public class BasePromise<R> implements Promise<R> {
 			try {
 				dispatchDone(callback, resolved);
 			} catch (Exception e) {
-				Log.e("BasePromise", "an uncaught exception occured in a DoneCallback" + e.getMessage());
+				Log.e("BasePromise", "an uncaught exception occured in a DoneCallback " + e.getMessage());
 			}
 		}
 		state = State.RESOLVED;
@@ -108,7 +108,7 @@ public class BasePromise<R> implements Promise<R> {
 			try {
 				dispatchFail(callback, rejected);
 			} catch (Exception e) {
-				Log.e("BasePromise", "an uncaught exception occured in a FailCallback" + e.getMessage());
+				Log.e("BasePromise", "an uncaught exception occured in a FailCallback " + e.getMessage());
 			}
 		}
 		state = State.REJECTED;
@@ -124,7 +124,7 @@ public class BasePromise<R> implements Promise<R> {
 			try {
 				dispatchCancel(callback);
 			} catch (Exception e) {
-				Log.e("BasePromise", "an uncaught exception occured in a CancelCallback" + e.getMessage());
+				Log.e("BasePromise", "an uncaught exception occured in a CancelCallback " + e.getMessage());
 			}
 		}
 		state = State.CANCELED;
@@ -140,7 +140,7 @@ public class BasePromise<R> implements Promise<R> {
 			try {
 				dispatchAlways(listener, result);
 			} catch (Exception e) {
-				Log.e("BasePromise", "an uncaught exception occured in a AlwaysCallback" + e.getMessage());
+				Log.e("BasePromise", "an uncaught exception occured in a AlwaysCallback " + e.getMessage());
 			}
 		}
 		state = State.RESOLVED;

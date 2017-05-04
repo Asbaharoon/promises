@@ -1,5 +1,5 @@
-/**
- * Copyright 2016 Eugeni Josep Senent i Gabriel
+/*
+ * Copyright 2017 Eugeni Josep Senent i Gabriel
  * This is a derivative work of an open-source project jdeferred(https://github.com/jdeferred/jdeferred)
  * by Ray Tsang("saturnism") as major contributor.
  *
@@ -25,8 +25,6 @@ import java.util.concurrent.Executor;
 public abstract class DeferredAsyncTask<P, R> extends AbsDeferred<P, R> {
 
 	private Throwable throwable;
-
-	private Executor executor = AsyncTask.SERIAL_EXECUTOR;
 
 	protected AsyncTask<P, Void, R> asyncTask = new AsyncTask<P, Void, R>() {
 
@@ -79,16 +77,20 @@ public abstract class DeferredAsyncTask<P, R> extends AbsDeferred<P, R> {
 
 	@Override
 	public Deferred<P, R> startOnExecutor(Executor executor, P params) {
-		this.executor = executor;
-		start(params);
+		doTask(executor, params);
 		return this;
 	}
 
 	@Override
-	protected void doTask(P params) {
-		asyncTask.executeOnExecutor(executor, params);
+	public Deferred<P, R> start(P params) {
+		doTask(AsyncTask.SERIAL_EXECUTOR, params);
+		return this;
 	}
 
+	@Override
+	protected void doTask(Executor executor, P params) {
+		asyncTask.executeOnExecutor(executor, params);
+	}
 
 	@Override
 	public Deferred<P, R> cancel() {

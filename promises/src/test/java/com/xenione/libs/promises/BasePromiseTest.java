@@ -6,6 +6,9 @@ import com.xenione.libs.promises.promise.listeners.AlwaysResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.concurrent.Executor;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -16,7 +19,7 @@ public class BasePromiseTest {
 	public void whenPromiseIsDone_ChangeStateIntoResolved() {
 		BaseDeferred<Integer, Integer> deferred = new BaseDeferred<Integer, Integer>() {
 			@Override
-			protected void doTask(Integer params) {
+			protected void doTask(Executor executor, Integer params) {
 				this.resolve(params);
 			}
 		};
@@ -28,7 +31,7 @@ public class BasePromiseTest {
 	public void whenPromiseIsDoneByAlways_ChangeStateIntoResolved() {
 		AbsDeferred<Integer, Integer> deferred = new BaseDeferred<Integer, Integer>() {
 			@Override
-			protected void doTask(Integer params) {
+			protected void doTask(Executor executor, Integer params) {
 				this.always(AlwaysResult.ok(params));
 			}
 		};
@@ -40,7 +43,7 @@ public class BasePromiseTest {
 	public void whenPromiseIsFail_ChangeStateIntoRejected() {
 		AbsDeferred<Integer, Integer> deferred = new BaseDeferred<Integer, Integer>() {
 			@Override
-			protected void doTask(Integer params) {
+			protected void doTask(Executor executor, Integer params) {
 				this.reject(new Exception());
 			}
 		};
@@ -52,7 +55,7 @@ public class BasePromiseTest {
 	public void whenPromiseIsCancel_ChangeStateIntoCanceled() {
 		AbsDeferred<Integer, Integer> deferred = new BaseDeferred<Integer, Integer>() {
 			@Override
-			protected void doTask(Integer params) {
+			protected void doTask(Executor executor, Integer params) {
 				this.cancel();
 			}
 		};

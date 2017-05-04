@@ -8,6 +8,9 @@ import com.xenione.libs.promises.promise.listeners.FailListener;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.concurrent.Executor;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -21,7 +24,7 @@ public class DeferredTest {
 		CancelListener cancelListener = mock(CancelListener.class);
 		AbsDeferred deferred = new BaseDeferred<Void, Void>() {
 			@Override
-			protected void doTask(Void params) {
+			protected void doTask(Executor executor, Void params) {
 
 			}
 		};
@@ -37,7 +40,7 @@ public class DeferredTest {
 		CancelListener cancelListener = mock(CancelListener.class);
 		AbsDeferred<Void, Void> deferred = new BaseDeferred<Void, Void>() {
 			@Override
-			protected void doTask(Void params) {
+			protected void doTask(Executor executor, Void params) {
 				this.cancel();
 			}
 		};
@@ -53,7 +56,7 @@ public class DeferredTest {
 
 		AbsDeferred deferred = new BaseDeferred<Void, Void>() {
 			@Override
-			protected void doTask(Void params) {
+			protected void doTask(Executor executor,Void params) {
 
 			}
 		};
@@ -66,7 +69,7 @@ public class DeferredTest {
 		DoneListener<Void> doneListener = mock(DoneListener.class);
 		AbsDeferred<Void, Void> deferred = new BaseDeferred<Void, Void>() {
 			@Override
-			protected void doTask(Void params) {
+			protected void doTask(Executor executor, Void params) {
 				this.resolve(null);
 			}
 		};
@@ -81,7 +84,7 @@ public class DeferredTest {
 	public void whenDoneDeferred_OverAlreadyDoneDeferred_throwException() {
 		AbsDeferred<Void, Void> deferred = new BaseDeferred<Void, Void>() {
 			@Override
-			protected void doTask(Void params) {
+			protected void doTask(Executor executor, Void params) {
 				this.resolve(null);
 			}
 		};
@@ -94,7 +97,7 @@ public class DeferredTest {
 		FailListener failListener = mock(FailListener.class);
 		AbsDeferred<Void, Void> deferred = new BaseDeferred<Void, Void>() {
 			@Override
-			protected void doTask(Void params) {
+			protected void doTask(Executor executor, Void params) {
 				this.reject(new Throwable());
 			}
 		};
@@ -109,7 +112,7 @@ public class DeferredTest {
 	public void whenFailDeferred_OverAlreadyFailDeferred_throwException() {
 		AbsDeferred<Void, Void> deferred = new BaseDeferred<Void, Void>() {
 			@Override
-			protected void doTask(Void params) {
+			protected void doTask(Executor executor, Void params) {
 				this.reject(new Exception());
 			}
 		};
