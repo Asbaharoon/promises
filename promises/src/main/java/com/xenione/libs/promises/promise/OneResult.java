@@ -15,41 +15,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.xenione.libs.promises.promise;
 
-import com.xenione.libs.promises.promise.listeners.AlwaysListener;
-import com.xenione.libs.promises.promise.listeners.CancelListener;
-import com.xenione.libs.promises.promise.listeners.DoneListener;
-import com.xenione.libs.promises.promise.listeners.FailListener;
+public class OneResult {
 
-public interface Promise<R> {
+	private final int index;
 
-	enum State {
+	private final Promise promise;
 
-		PENDING,
+	private final Object result;
 
-		REJECTED,
-
-		RESOLVED,
-
-		CANCELED,
+	public OneResult(int index, Promise promise, Object result) {
+		this.index = index;
+		this.promise = promise;
+		this.result = result;
 	}
 
-	boolean isPending();
+	public int getIndex() {
+		return index;
+	}
 
-	boolean isResolved();
+	public Promise getPromise() {
+		return promise;
+	}
 
-	boolean isRejected();
+	public Object getResult() {
+		return result;
+	}
 
-	boolean isCanceled();
-
-	Promise<R> register(DoneListener<R> listener);
-
-	Promise<R> register(AlwaysListener<R> listener);
-
-	Promise<R> register(FailListener listener);
-
-	Promise<R> register(CancelListener listener);
-
+	@Override
+	public String toString() {
+		return "OneResult [index=" + index + ", promise=" + promise
+				+ ", result=" + result + "]";
+	}
 }

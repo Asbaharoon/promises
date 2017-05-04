@@ -17,39 +17,40 @@
  */
 
 package com.xenione.libs.promises.promise;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.xenione.libs.promises.promise.listeners.AlwaysListener;
-import com.xenione.libs.promises.promise.listeners.CancelListener;
-import com.xenione.libs.promises.promise.listeners.DoneListener;
-import com.xenione.libs.promises.promise.listeners.FailListener;
+public class MultiResult implements Iterable<OneResult> {
 
-public interface Promise<R> {
+	private final List<OneResult> results;
 
-	enum State {
-
-		PENDING,
-
-		REJECTED,
-
-		RESOLVED,
-
-		CANCELED,
+	public MultiResult(int size) {
+		this.results = new CopyOnWriteArrayList<>(new OneResult[size]);
 	}
 
-	boolean isPending();
+	protected void set(int index, OneResult result) {
+		results.set(index, result);
+	}
 
-	boolean isResolved();
+	public boolean add(OneResult oneResult) {
+		return results.add(oneResult);
+	}
 
-	boolean isRejected();
+	public OneResult get(int index) {
+		return results.get(index);
+	}
 
-	boolean isCanceled();
+	public Iterator<OneResult> iterator() {
+		return results.iterator();
+	}
 
-	Promise<R> register(DoneListener<R> listener);
+	public int size() {
+		return results.size();
+	}
 
-	Promise<R> register(AlwaysListener<R> listener);
-
-	Promise<R> register(FailListener listener);
-
-	Promise<R> register(CancelListener listener);
-
+	@Override
+	public String toString() {
+		return "MultipleResults [results=" + results + "]";
+	}
 }

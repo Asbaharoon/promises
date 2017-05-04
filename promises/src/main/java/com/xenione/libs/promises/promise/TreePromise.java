@@ -18,38 +18,11 @@
 
 package com.xenione.libs.promises.promise;
 
-import com.xenione.libs.promises.promise.listeners.AlwaysListener;
-import com.xenione.libs.promises.promise.listeners.CancelListener;
-import com.xenione.libs.promises.promise.listeners.DoneListener;
-import com.xenione.libs.promises.promise.listeners.FailListener;
+import com.xenione.libs.promises.deferred.Deferred;
 
-public interface Promise<R> {
+public interface TreePromise<R_IN> {
 
-	enum State {
+	<R_OUT> TreePromise<R_OUT> then(final Deferred<R_IN, R_OUT> deferred);
 
-		PENDING,
-
-		REJECTED,
-
-		RESOLVED,
-
-		CANCELED,
-	}
-
-	boolean isPending();
-
-	boolean isResolved();
-
-	boolean isRejected();
-
-	boolean isCanceled();
-
-	Promise<R> register(DoneListener<R> listener);
-
-	Promise<R> register(AlwaysListener<R> listener);
-
-	Promise<R> register(FailListener listener);
-
-	Promise<R> register(CancelListener listener);
-
+	TreePromise<MultiResult> when(Deferred<R_IN, OneResult>... deferreds);
 }
