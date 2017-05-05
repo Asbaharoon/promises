@@ -19,6 +19,7 @@
 package com.xenione.libs.promises.promise;
 import com.xenione.libs.promises.deferred.Deferred;
 import com.xenione.libs.promises.deferred.MultiDeferredAdapter;
+import com.xenione.libs.promises.deferred.MultiPromiseMakerAdapter;
 import com.xenione.libs.promises.promise.listeners.AlwaysListener;
 import com.xenione.libs.promises.promise.listeners.AlwaysResult;
 import com.xenione.libs.promises.promise.listeners.CancelListener;
@@ -34,6 +35,8 @@ public interface PromiseMaker<P, R_IN> extends TreePromise<R_IN> {
 	void start(P params);
 
 	void cancel();
+
+	Promise<R_IN> promise();
 
 	class Impl<P, R_IN> implements PromiseMaker<P, R_IN> {
 
@@ -98,6 +101,46 @@ public interface PromiseMaker<P, R_IN> extends TreePromise<R_IN> {
 
 		public void cancel() {
 			previous.cancel();
+		}
+
+		@Override
+		public Promise<R_IN> promise() {
+			return previous.promise();
+		}
+
+		@Override
+		public <R_OUT> TreePromise<R_OUT> then(final PromiseMaker<R_IN, R_OUT> promiseMaker) {
+			pipe(promiseMaker);
+			return promiseMaker;
+		}
+
+		@Override
+		public TreePromise<MultiResult> when(PromiseMaker<R_IN, OneResult>... promiseMakers) {
+			MultiPromiseMakerAdapter<R_IN> multiPromiseMakerAdapter = new MultiPromiseMakerAdapter<>(promiseMakers);
+			pipe(multiPromiseMakerAdapter);
+			return new Impl<>(multiPromiseMakerAdapter);
+		}
+
+		private void pipe(final PromiseMaker<R_IN, ?> promiseMaker) {
+			previous.promise()
+					.register(new DoneListener<R_IN>() {
+						@Override
+						public void onDone(R_IN result) {
+							promiseMaker.start(result);
+						}
+					})
+					.register(new CancelListener() {
+						@Override
+						public void onCancel() {
+							promiseMaker.cancel();
+						}
+					})
+					.register(new AlwaysListener<R_IN>() {
+						@Override
+						public void onAlways(AlwaysResult<R_IN> result) {
+							promiseMaker.start(result.getResult());
+						}
+					});
 		}
 	}
 }

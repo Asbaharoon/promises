@@ -19,30 +19,31 @@
 package com.xenione.libs.promises.deferred;
 import com.xenione.libs.promises.promise.MultiResult;
 import com.xenione.libs.promises.promise.OneResult;
+import com.xenione.libs.promises.promise.PromiseMaker;
 import com.xenione.libs.promises.promise.listeners.AlwaysListener;
 import com.xenione.libs.promises.promise.listeners.AlwaysResult;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MultiDeferredAdapter<R_IN> extends BaseDeferred<R_IN, MultiResult>
+public class MultiPromiseMakerAdapter<R_IN> extends BaseDeferred<R_IN, MultiResult>
 		implements AlwaysListener<OneResult> {
 
-	private Deferred<R_IN, OneResult>[] deferreds;
+	private PromiseMaker<R_IN, OneResult>[] promiseMakers;
 	private MultiResult results;
 	private AtomicInteger countDown;
 
-	public MultiDeferredAdapter(Deferred<R_IN, OneResult>... deferreds) {
-		this.deferreds = deferreds;
-		results = new MultiResult(deferreds.length);
-		countDown = new AtomicInteger(deferreds.length);
+	public MultiPromiseMakerAdapter(PromiseMaker<R_IN, OneResult>... promiseMakers) {
+		this.promiseMakers = promiseMakers;
+		results = new MultiResult(promiseMakers.length);
+		countDown = new AtomicInteger(promiseMakers.length);
 	}
 
 	@Override
 	protected void doTask(Executor executor, R_IN params) {
-		for (Deferred<R_IN, OneResult> deferred : deferreds) {
-			deferred.promise().register(this);
-			deferred.startOnExecutor(executor, params);
+		for (PromiseMaker<R_IN, OneResult> promiseMaker : promiseMakers) {
+			promiseMaker.promise().register(this);
+			promiseMaker.start(params);
 		}
 	}
 

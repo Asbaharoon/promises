@@ -7,17 +7,17 @@ import android.util.Log;
 import com.xenione.libs.promises.deferred.BaseDeferred;
 import com.xenione.libs.promises.deferred.Deferred;
 import com.xenione.libs.promises.deferred.DeferredAsyncTask;
+import com.xenione.libs.promises.deferred.MainUIExecutor;
 import com.xenione.libs.promises.promise.MultiResult;
 import com.xenione.libs.promises.promise.OneResult;
 import com.xenione.libs.promises.promise.PromiseMaker;
+import com.xenione.libs.promises.promise.TreePromise;
 import com.xenione.libs.promises.promise.listeners.AlwaysResult;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
-
-	private PromiseMaker<Void, Integer> promiseMaker;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -113,10 +113,73 @@ public class MainActivity extends AppCompatActivity {
 			}
 		};
 
-		promiseMaker = PromiseMaker.Impl.make(deferred1).onExecutor(Executors.newFixedThreadPool(4));
+		Deferred<Void, Void> deferred10 = new BaseDeferred<Void, Void>() {
 
-		promiseMaker.then(async0).then(deferred3).when(deferred4a, deferred4b).then(deferred5).then(async1).then(async2).then(async3);
+			@Override
+			protected void doTask(Executor executor, Void params) {
+				Log.i("MainActivity", "deferred10#doTask(...)");
+				this.resolve(null);
+			}
+		};
 
-		promiseMaker.start(null);
+		Deferred<Void, Void> deferred11 = new BaseDeferred<Void, Void>() {
+
+			@Override
+			protected void doTask(Executor executor, Void params) {
+				Log.i("MainActivity", "deferred11#doTask(...)");
+				this.resolve(null);
+			}
+		};
+
+		Deferred<Void, OneResult> deferred12 = new BaseDeferred<Void, OneResult>() {
+
+			@Override
+			protected void doTask(Executor executor, Void params) {
+				Log.i("MainActivity", "deferred12#doTask(...)");
+				this.resolve(new OneResult(1, this.promise(), null));
+			}
+		};
+
+		Deferred<OneResult, OneResult> deferred13 = new BaseDeferred<OneResult, OneResult>() {
+
+			@Override
+			protected void doTask(Executor executor, OneResult params) {
+				Log.i("MainActivity", "deferred13#doTask(...)");
+				this.resolve(new OneResult(1, this.promise(), null));
+			}
+		};
+
+		Deferred<MultiResult, Void> deferred14 = new BaseDeferred<MultiResult, Void>() {
+
+			@Override
+			protected void doTask(Executor executor, MultiResult params) {
+				Log.i("MainActivity", "deferred14#doTask(...)");
+				this.always(null);
+			}
+		};
+
+		PromiseMaker<Void, Void> promiseMaker3 = PromiseMaker.Impl.make(deferred10).onExecutor(new MainUIExecutor());
+
+		PromiseMaker<Void, OneResult> promiseMaker3a = PromiseMaker.Impl.make(deferred12).onExecutor(new MainUIExecutor());
+
+		promiseMaker3a.then(deferred13);
+
+		PromiseMaker<Void, OneResult> promiseMaker3b = PromiseMaker.Impl.make(deferred12).onExecutor(new MainUIExecutor());
+
+		promiseMaker3.when(promiseMaker3a, promiseMaker3b).then(deferred14);
+
+		promiseMaker3.start(null);
+
+
+
+/*		PromiseMaker<Void, Void> promiseMaker2 = PromiseMaker.Impl.make(deferred10).onExecutor(new MainUIExecutor());
+
+		PromiseMaker<Void, Integer> promiseMaker1 = PromiseMaker.Impl.make(deferred1).onExecutor(Executors.newFixedThreadPool(4));
+
+		promiseMaker2.then(deferred11);
+
+		promiseMaker1.then(async0).then(deferred3).when(deferred4a, deferred4b).then(deferred5).then(async1).then(async2).then(async3).then(promiseMaker2);
+
+		promiseMaker1.start(null);*/
 	}
 }

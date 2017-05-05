@@ -25,4 +25,9 @@ public interface TreePromise<R_IN> {
 	<R_OUT> TreePromise<R_OUT> then(final Deferred<R_IN, R_OUT> deferred);
 
 	TreePromise<MultiResult> when(Deferred<R_IN, OneResult>... deferreds);
+
+
+	<R_OUT> TreePromise<R_OUT> then(PromiseMaker<R_IN, R_OUT> promiseMaker);
+
+	TreePromise<MultiResult> when(PromiseMaker<R_IN, OneResult>... promiseMakers);
 }
